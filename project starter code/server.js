@@ -32,17 +32,23 @@ app.get('/filteredimage', async (req, res) => {
   // validate image_url query
   if (!image_url) {
     return res.status(400).send({
+      code: 400,
       message: 'image url is invalid!!!',
     });
   }
 
-  // call filterImageFromURL(image_url) to filter the image
-  const response = await filterImageFromURL(image_url);
-  // send the resulting file in the response
-  res.status(200).sendFile(response);
-
-  // deletes any files on the server on finish of the response
-  await deleteLocalFiles(response);
+  try {
+    // call filterImageFromURL(image_url) to filter the image
+    const response = await filterImageFromURL(image_url);
+    // send the resulting file in the response
+    return res.status(200).sendFile(response);
+  } catch (error) {
+    console.log('processing image occurs error', error);
+    return res.status(422).send({
+      code: 422,
+      message: 'Unprocessing',
+    });
+  }
 });
 //! END @TODO1
 
